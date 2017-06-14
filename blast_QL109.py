@@ -3,9 +3,11 @@ from Bio.Seq import Seq
 
 blastn_program_path = 'D:\\Program Files\\NCBI\\blast-2.6.0+\\bin\\blastn.exe'
 blastp_program_path = 'D:\\Program Files\\NCBI\\blast-2.6.0+\\bin\\blastp.exe'
-output_path = os.path.join(os.getcwd(),'temp\\')
 nucldb_path = 'D:\\WORKs\\Resource_QL109\\blastdb_QL109\\nt_QL109'
 protdb_path = 'D:\\WORKs\\Resource_QL109\\blastdb_QL109\\prot_QL109'
+output_path = 'D:\\WORKs\\BIOBIO\\temp\\'
+if not os.path.exists(output_path):
+	os.makedirs(output_path)
 
 # determine seq type from user input
 def seq_type():
