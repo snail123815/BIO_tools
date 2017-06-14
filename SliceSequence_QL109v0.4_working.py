@@ -142,7 +142,7 @@ def slice(sc, target_start, target_end, flanking):
 	write_log(f"\n########## Output files ##########\n\n{caution}{output_file}\n{logfile}\n")
 
 # Test output:
-# slice(3,1244,1251, 100000)
+# slice(2,1234,1245, 100000)
 slice(*user_input())
 
 # pause the program
