@@ -1,6 +1,7 @@
 from Bio import SeqIO
 import re
 import os
+from time import strftime
 
 import write_file
 
@@ -14,6 +15,11 @@ while search_word == '':
 	print("="*60)
 	genome_name = genome_dir.split("\\")[-1]
 	out_file = f'D:/WORKs/Resources/Resource_QL109/temp/genome_txt_search/{genome_name}_{write_file.clean_str(search_word)}.txt'
+
+time_stamp = f"{'='*6} {strftime('%X %d/%m/%Y %Z')} "
+time_stamp = time_stamp +  '='*(60-len(time_stamp)) + '\n'
+write_file.write(time_stamp, out_file)
+
 for file in os.listdir(genome_dir):
 	if file.endswith('.embl') and file.startswith('sc') and len(file) == 9:
 		sc = file[2:4].zfill(3)
@@ -35,7 +41,7 @@ for file in os.listdir(genome_dir):
 						for note in feat.qualifiers['note']:
 							if note.startswith('ORF number'):
 								orf = note.split(' ')[2]
-						protein_id = f'scaffolad_{sc}_ORF_{orf}'
+						protein_id = f'scaffold_{sc}_ORF_{orf}'
 						found_proteins.append(protein_id)
 						output_str = f'{feat}\nMatch:\t{txt_str}\nID:\t{protein_id}\n{"-"*60}'
 					if found:
