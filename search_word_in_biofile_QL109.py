@@ -14,7 +14,7 @@ while search_word == '':
 	search_word = input('What do you want to search? (case insensitive, can be regular expression)\n')
 	print("="*60)
 	genome_name = genome_dir.split("\\")[-1]
-	out_file = f'D:/WORKs/Resources/Resource_QL109/temp/genome_txt_search/{genome_name}_{write_file.clean_str(search_word)}.txt'
+	out_file = f'D:/WORKs/Resources/temp/genome_txt_search/{genome_name}_{write_file.clean_str(search_word)}.txt'
 
 time_stamp = f"{'='*6} {strftime('%X %d/%m/%Y %Z')} "
 time_stamp = time_stamp +  '='*(60-len(time_stamp)) + '\n'
