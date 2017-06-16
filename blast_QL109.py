@@ -1,11 +1,13 @@
 import os
 from Bio.Seq import Seq
 
-blastn_program_path = 'D:\\Program Files\\NCBI\\blast-2.6.0+\\bin\\blastn.exe'
-blastp_program_path = 'D:\\Program Files\\NCBI\\blast-2.6.0+\\bin\\blastp.exe'
-nucldb_path = 'D:\\WORKs\\Resource_QL109\\blastdb_QL109\\nt_QL109'
-protdb_path = 'D:\\WORKs\\Resource_QL109\\blastdb_QL109\\prot_QL109'
-output_path = 'D:\\WORKs\\BIOBIO\\temp\\'
+blastn_program_path = r"D:\Program Files\NCBI\blast-2.6.0+\bin\blastn.exe"
+blastp_program_path = r"D:\Program Files\NCBI\blast-2.6.0+\bin\blastp.exe"
+nucldb_path = r"D:\WORKs\Resources\Resource_QL109\Genome_QL109\blastdb_QL109\nt_QL109"
+protdb_path = r"D:\WORKs\Resources\Resource_QL109\Genome_QL109\blastdb_QL109\prot_QL109"
+output_path = r"D:\WORKs\BIOBIO\temp"
+num_threads = os.cpu_count()
+
 if not os.path.exists(output_path):
 	os.makedirs(output_path)
 
@@ -27,22 +29,32 @@ def input_seqs(seq_type):
 	seq_titles = []
 	temp_input_seq_file = os.path.join(output_path, 'temp_input_seq.fa')
 	
-	print('Please enter/paste your gene(s)/protein(s) in fasta format.\nThen start a new line, press Ctrl-Z(or D) + <Enter> to save it.\nInput:')
-	input_seqs = []
-	while True:
-		try:
-			line = input("")
-		except EOFError:
-			break
-		input_seqs.append(line)
+		# This block is to find whether to perform search with existing file
+	import pathlib
+	last_blast = 'n'
+	if pathlib.Path(temp_input_seq_file).is_file() and os.stat(temp_input_seq_file).st_size != 0:
+		last_blast = input('Found last search, do you want to do that again?(y/n)')
+	if last_blast != 'y':
+		print('Please enter/paste your gene(s)/protein(s) in <fasta> format.\nThen start a new line, press Ctrl-Z(or D) + <Enter> to save it.\nInput:')
+		input_sequences = []
+		while True:
+			try:
+				line = input("")
+			except EOFError:
+				break
+			input_sequences.append(line)
+	else:
+		with open(temp_input_seq_file, 'r') as f:
+			input_sequences = f.readlines()
+	
 	with open(temp_input_seq_file, 'w') as input_file_handle:
-		for line in input_seqs:
+		for line in input_sequences:
 			if line.startswith('>'):
-				input_file_handle.write('\n'+line+'\n')
+				input_file_handle.write(line.strip() + '\n')
 				num_seqs += 1
 				seq_titles.append(line[1:])
 			else:
-				input_file_handle.write(line)
+				input_file_handle.write(line.strip() + '\n')
 				while num_seqs == 1 and seq_type == '':
 					from Bio.Data.CodonTable import TranslationError
 					try:
@@ -65,7 +77,8 @@ def blastn(temp_input_seq_file, output_path, outfile):
 										# outfmt = 5, 
 										db = nucldb_path, 
 										remote = False,
-										# evalue = 1e-30
+										# evalue = 1e-30,
+										num_threads = num_threads
 										)
 	print(f'Running BLASTN command:\n{run_blastn}')
 	stdout, stderr = run_blastn()
@@ -86,7 +99,8 @@ def blastp(temp_input_seq_file, output_path, outfile):
 										# outfmt = 5, 
 										db = protdb_path, 
 										remote = False,
-										# evalue = 1e-30
+										# evalue = 1e-30,
+										num_threads = num_threads
 										)
 	print(f'Running BLASTP command:\n{run_blastp}')
 	stdout, stderr = run_blastp()
