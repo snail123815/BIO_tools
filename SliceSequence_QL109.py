@@ -106,7 +106,7 @@ def slice(sc, target_start, target_end, flanking):
 				write_log('Something wrong?')
 				raise
 		else: # if the gene has no homologe, calculate orf number here.
-			ORF_num = first_orfnum + feat_num
+			ORF_num = str(first_orfnum + feat_num).zfill(4)
 			write_log(f'ORF number {ORF_num} on the contig: Unknown protein')
 			
 			

@@ -5,7 +5,7 @@ blastn_program_path = r"D:\Program Files\NCBI\blast-2.6.0+\bin\blastn.exe"
 blastp_program_path = r"D:\Program Files\NCBI\blast-2.6.0+\bin\blastp.exe"
 nucldb_path = r"D:\WORKs\Resources\Streptomyces_genomes\blastdb\all_strep_201705\blastdb_nucl\stre_all_nucldb"
 protdb_path = r"D:\WORKs\Resources\Streptomyces_genomes\MGB_DB\All_strep_201705"
-output_path = r"D:\WORKs\BIOBIO\temp"
+output_path = r"D:\WORKs\Resources\temp\blast"
 num_threads = os.cpu_count()
 
 if not os.path.exists(output_path):
@@ -117,8 +117,8 @@ temp_input_seq_file, num_seqs, seq_titles, seq_type = input_seqs(seq_type())
 import re
 file_name = re.sub('[^\w_.)( -]', '.', seq_titles[0])[:30]
 if seq_type == 'prot':
-	blastp(temp_input_seq_file, output_path, outfile = f'{file_name}_{num_seqs if num_seqs != 1 else ""}{"seqs_"if num_seqs != 1 else ""}blastp_allStrep201705.out')
+	blastp(temp_input_seq_file, output_path, outfile = f'allStrep201705_blastp_{file_name}_{num_seqs if num_seqs != 1 else ""}{"seqs_"if num_seqs != 1 else ""}.out')
 elif seq_type == 'nucl':
-	blastn(temp_input_seq_file, output_path, outfile = f'{file_name}_{num_seqs if num_seqs != 1 else ""}{"seqs_"if num_seqs != 1 else ""}blastn_allStrep201705.out')
+	blastn(temp_input_seq_file, output_path, outfile = f'allStrep201705_blastn_{file_name}_{num_seqs if num_seqs != 1 else ""}{"seqs_"if num_seqs != 1 else ""}.out')
 else:
 	print('No BLAST done')
