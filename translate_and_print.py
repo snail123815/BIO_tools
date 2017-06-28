@@ -38,7 +38,7 @@ def print_translation(nucl, line_width,three_lettered = False, analysis = False)
 		print(f'Aromaticity:\t\t{prot_ana.aromaticity():,.4f}')
 		
 
-nucl = Seq('''ATGGACTACAAGGACCACGACGGCGACTACAAGGACCACGACATCGACTACAAGGACGACGACGACAAGTGA'''.replace('\n', '').replace('\r', ''))
+nucl = Seq('''ATGGACTACAAGGACCACGACGGCGACTACAAGGACCACGACATCGACTACAAGGACGACGACGACAAGTAGACCAGAGCCCGCTCACCCGGCCCCAGATTGCGGTTGAAGTCC'''.replace('\n', '').replace('\r', ''))
 
 print(nucl)
 print(f'Nucleotide length: {len(nucl)}')
