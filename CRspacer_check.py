@@ -1,14 +1,16 @@
-# For CRISPR spacer design: generate seqs for BLAST checking the specificity.
-# Add blast feature later
-
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio import SeqIO
 from Bio.Alphabet import IUPAC
 import os
 
-my_seq = Seq('GCCACTTCGGCCTGACGTCCcgg', IUPAC.unambiguous_dna)
+# For CRISPR spacer design: generate seqs for BLAST checking the specificity.
+# Add blast feature later
+
+my_seq = Seq('CTCCGGGCAGATGAAAGGTCagg', IUPAC.unambiguous_dna)
 nucldb_path = r"D:\WORKs\Resources\Streptomyces_genomes\blastdb\M145"
+output_file = r"D:\WORKs\Resources\temp\seq_sp_blast.out"
+temp_file = r"D:\WORKs\Resources\temp\seq_sp.fa"
 
 def generate_4seq(seq):
 	A_seq = SeqRecord(seq + Seq('AGG', IUPAC.unambiguous_dna), 'A', description = '')
@@ -40,11 +42,11 @@ else:
 	print('Wrong input!')
 	raise
 
+print('\nFor pCRISPomyces-2 one spacer design:')
+print(f'Forward spacer: acgc{my_seq[:-3]}')
+print(f'Reverse spacer: aaac{rc_sp}\n')
 
-temp_file = r"D:\WORKs\Resources\temp\seq_sp.fa"
 SeqIO.write(all_sp, temp_file, 'fasta')
-output_file = r"D:\WORKs\Resources\temp\seq_sp_blast.out"
-
 blastn_program_path = r"D:\Program Files\NCBI\blast-2.6.0+\bin\blastn.exe"
 
 from Bio.Blast.Applications import NcbiblastnCommandline

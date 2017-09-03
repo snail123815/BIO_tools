@@ -5,7 +5,7 @@ from time import strftime
 
 import write_file
 
-genome = r"D:\WORKs\Resources\Streptomyces_genomes\M145.gb"
+genome = r"D:\WORKs\Resources\Streptomyces_genomes\M145PlusStredbNotes.gb"
 search_word = ''
 found_num = 0
 
@@ -21,7 +21,7 @@ write_file.write(time_stamp, out_file)
 
 my_seq = SeqIO.read(genome, 'genbank')
 find = re.compile(search_word, re.IGNORECASE)
-foundlist = {}
+foundlist = set()
 for feat in my_seq.features:
 	found = False # Set found flag for each feature run, turns true if found and stop searching against other tags in the same feature
 	if feat.type == 'misc_feature':
@@ -34,8 +34,11 @@ for feat in my_seq.features:
 				if find.search(txt) != None:
 					output_str = f'{feat}\nMatch:\t{txt}\n{"-"*60}'
 					found = True
-					SCO_num = feat.qualifiers['locus_tag'][0]
-					foundlist[SCO_num] = feat.type
+					try:
+						SCO_num = feat.qualifiers['locus_tag'][0]
+					except KeyError as err:
+						print(err, feat.qualifiers[tag])
+					foundlist.add(SCO_num)
 			if found:
 				write_file.write(output_str, out_file)
 				found_num += 1
@@ -44,8 +47,8 @@ write_file.write(f'\nFound {found_num} features with the word "{search_word}"', 
 write_file.write(f'\nFound features:\n{foundlist}', out_file)
 
 with open(out_tsv, 'w') as csv_file:
-	for key, value in foundlist.items():
-		csv_file.write(f'{key}\t{value}\n')
+	for value in foundlist:
+		csv_file.write(f'{value}\n')
 		
 print(f'\ntsv file: {out_tsv}\n')
 write_file.write(f'\n{"="*60}', out_file)

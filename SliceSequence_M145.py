@@ -67,9 +67,13 @@ def slice_M145(target_start, target_end, flanking, output_path = r'D:\WORKs\Reso
 	else:
 		write_log(f'The gene(s) wanted locate(s) from {genes_start} to {genes_end}.\n')
 
-	# Set the desired start and end point on the imported sequence, and creat a sub sample
+	# Set the desired start and end point on the imported sequence, deal with out of range exceptions, and creat a sub sample
 	start = genes_start - flanking
 	end = genes_end + flanking
+	if start < 0:
+		start = 0
+	if end > len(sample):
+		end= len(sample)
 	sub_sample = sample[start:end]
 	write_log(f'Target seqID:\tSCO{target_start_str} to {target_end_str}\nFlanking:{flanking}\n')
 	
@@ -116,5 +120,3 @@ slice_M145(*user_input())
 # pause the program
 
 input('Press <ENTER> to continue.')
-
-exit()
