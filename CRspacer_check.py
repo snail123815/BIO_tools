@@ -7,10 +7,12 @@ import os
 # For CRISPR spacer design: generate seqs for BLAST checking the specificity.
 # Add blast feature later
 
-my_seq = Seq('CTCCGGGCAGATGAAAGGTCagg', IUPAC.unambiguous_dna)
-nucldb_path = r"D:\WORKs\Resources\Streptomyces_genomes\blastdb\M145"
-output_file = r"D:\WORKs\Resources\temp\seq_sp_blast.out"
-temp_file = r"D:\WORKs\Resources\temp\seq_sp.fa"
+my_seq = Seq('GGTGCACAAAGCCATACGAGcgg', IUPAC.unambiguous_dna)
+nucldb_path = r"D:\WORKs\Misc.files\Streptomyces_genomes\blastdb\M145"
+output_file = r"D:\WORKs\Misc.files\temp\seq_sp_blast.out"
+temp_file = r"D:\WORKs\Misc.files\temp\seq_sp.fa"
+blastn_program_path = r"D:\Program Files\NCBI\blast-2.6.0+\bin\blastn.exe"
+
 
 def generate_4seq(seq):
 	A_seq = SeqRecord(seq + Seq('AGG', IUPAC.unambiguous_dna), 'A', description = '')
@@ -47,7 +49,6 @@ print(f'Forward spacer: acgc{my_seq[:-3]}')
 print(f'Reverse spacer: aaac{rc_sp}\n')
 
 SeqIO.write(all_sp, temp_file, 'fasta')
-blastn_program_path = r"D:\Program Files\NCBI\blast-2.6.0+\bin\blastn.exe"
 
 from Bio.Blast.Applications import NcbiblastnCommandline
 num_threads = os.cpu_count()

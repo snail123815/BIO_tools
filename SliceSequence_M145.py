@@ -1,6 +1,15 @@
 from Bio import SeqIO
 import os
 import pathlib # for checking the existance of a file
+import platform
+
+# Define path
+if platform.system() == 'Darwin':
+	genomePath = '/Users/durand.dc/Documents/works/Misc.files/Streptomyces_genomes/M145.gb'
+	output_path = '/Users/durand.dc/Documents/works/Misc.files/Streptomyces_genomes/Slices'
+else:
+	genomePath = r'D:\WORKs\Misc.files\Streptomyces_genomes\M145.gb'
+	output_path = r'D:\WORKs\Misc.files\Streptomyces_genomes\Slices'
 
 
 def user_input():
@@ -39,7 +48,7 @@ def write_log(logstr, end = None):
 	print(logstr, end = end)
 	log_handle.close()
 
-def slice_M145(target_start, target_end, flanking, output_path = r'D:\WORKs\Resources\Streptomyces_genomes\Slices'):
+def slice_M145(target_start, target_end, flanking, output_path = output_path):
 	# Convert numbers to strings needed in output
 	target_start_str = str(target_start).zfill(4)
 	target_end_str = str(target_end).zfill(4)
@@ -52,7 +61,7 @@ def slice_M145(target_start, target_end, flanking, output_path = r'D:\WORKs\Reso
 
 	# Read the file
 	# Check if the data is actually imported
-	sample = SeqIO.read(r'D:\WORKs\Resources\Streptomyces_genomes\M145.gb',"genbank")
+	sample = SeqIO.read(genomePath,"genbank")
 	write_log(f'The imported sequence has {len(sample.features)} features.\n')
 	
 	for int, feat in enumerate(sample.features):
