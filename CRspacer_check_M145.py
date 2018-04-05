@@ -3,16 +3,29 @@ from Bio.SeqRecord import SeqRecord
 from Bio import SeqIO
 from Bio.Alphabet import IUPAC
 import os
+import platform
 
 # For CRISPR spacer design: generate seqs for BLAST checking the specificity.
 # Add blast feature later
 
-my_seq = Seq('GGTGCACAAAGCCATACGAGcgg', IUPAC.unambiguous_dna)
-nucldb_path = r"D:\WORKs\Misc.files\Streptomyces_genomes\blastdb\M145"
-output_file = r"D:\WORKs\Misc.files\temp\seq_sp_blast.out"
-temp_file = r"D:\WORKs\Misc.files\temp\seq_sp.fa"
-blastn_program_path = r"D:\Program Files\NCBI\blast-2.6.0+\bin\blastn.exe"
+# Define path
+if platform.system() == 'Darwin':
+	workPath = '/Users/durand.dc/Documents/works'
+	blastn_program_path = 'blastn'
+	fileReader = ['open', '-a', 'TextWrangler']
+elif platform.system() == 'Linux':
+	workPath = '/mnt/d/WORKs'
+	blastn_program_path = 'blastn'
+else: # 'Windows'
+	workPath = 'D:/WORKs'
+	blastn_program_path = r"D:\Program Files\NCBI\blast-2.6.0+\bin\blastn.exe"
+	fileReader = ['notepad']
 
+
+my_seq = Seq(input('23 bp, spacer + PAM sequence:\n'), IUPAC.unambiguous_dna)
+nucldb_path = os.path.join(workPath, "Resources/Resource_M145/blastdb/M145_nucl")
+output_file = os.path.join(workPath, "Resources/Resource_M145/tmp/seq_sp_blast.out")
+temp_file = os.path.join(workPath, "Resources/Resource_M145/tmp/seq_sp.fa")
 
 def generate_4seq(seq):
 	A_seq = SeqRecord(seq + Seq('AGG', IUPAC.unambiguous_dna), 'A', description = '')
@@ -48,6 +61,9 @@ print('\nFor pCRISPomyces-2 one spacer design:')
 print(f'Forward spacer: acgc{my_seq[:-3]}')
 print(f'Reverse spacer: aaac{rc_sp}\n')
 
+print('\nFor pCRISPR-Cas9 and pCRISPR-dCas9 design:')
+print(f'catgccatgg{my_seq[:-3]}gttttagagctagaaatagc')
+
 SeqIO.write(all_sp, temp_file, 'fasta')
 
 from Bio.Blast.Applications import NcbiblastnCommandline
@@ -59,13 +75,15 @@ run_blastn = NcbiblastnCommandline(blastn_program_path,
 								   remote = False,
 								   evalue = 0.1,
 								   num_threads = num_threads,
-								   word_size = 7
+								   word_size = 6
 								   )
 stdout, stderr = run_blastn()
 if stderr == '':
 	print(f'\nSuccess!!\n{output_file}\n')
 from subprocess import run
+
+
 try:
-	run(['notepad', output_file])
+	run([*fileReader, output_file])
 except:
 	pass

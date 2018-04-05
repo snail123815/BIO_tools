@@ -5,11 +5,14 @@ import platform
 
 # Define path
 if platform.system() == 'Darwin':
-	genomePath = '/Users/durand.dc/Documents/works/Misc.files/Streptomyces_genomes/M145.gb'
-	output_path = '/Users/durand.dc/Documents/works/Misc.files/Streptomyces_genomes/Slices'
-else:
-	genomePath = r'D:\WORKs\Misc.files\Streptomyces_genomes\M145.gb'
-	output_path = r'D:\WORKs\Misc.files\Streptomyces_genomes\Slices'
+	genomePath = '/Users/durand.dc/Documents/works/Resources/Resource_M145/M145.gb'
+	output_path = '/Users/durand.dc/Documents/works/Resources/Resource_M145/Slices'
+elif platform.system() == 'Linux':
+	genomePath = '/mnt/d/WORKs/Resources/Resource_M145/M145.gb'
+	output_path = '/mnt/d/WORKs/Resources/Resource_M145/Slices'	
+else: # 'Windows'
+	genomePath = r'D:\WORKs\Resources\Resource_M145\M145.gb'
+	output_path = r'D:\WORKs\Resources\Resource_M145\Slices'
 
 
 def user_input():

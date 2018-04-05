@@ -1,3 +1,11 @@
+# Define path
+import platform
+if platform.system() == 'Darwin':
+	fileReader = ['open', '-a', 'TextWrangler']
+elif platform.system() == 'Linux':
+	
+else: # 'Windows'
+	fileReader = ['notepad']
 
 def clear(file_path):
 	import pathlib
@@ -13,8 +21,10 @@ def write(string, file_path, end = None):
 
 def open_in_notepad(file_path):
 	import subprocess
-	run_notepad = subprocess.run(['notepad', file_path], shell = True)
-	# print(run_notepad)
+	try:
+		run_notepad = subprocess.run([*fileReader, file_path], shell = True)
+	except:
+		print(run_notepad)
 	
 def clean_str(str):
 	import re
