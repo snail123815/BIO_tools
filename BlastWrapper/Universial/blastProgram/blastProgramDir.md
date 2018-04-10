@@ -1,1 +1,0 @@
-This folder should contain the binary of blast programs (.exe) and necessary dll files.
