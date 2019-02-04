@@ -121,9 +121,9 @@ for col, ax in zip(rawDf.columns, axs.ravel()):
         # pdf = Probability Density Functions
         pdf = np.exp(logprob)
         ax.plot(x, pdf, linestyle='-', color='k')
-        responsibilities = model.predict_proba(x[:, np.newaxis])
-        pdf_individual = responsibilities * pdf[:, np.newaxis]
-        ax.plot(x, pdf_individual, linestyle='--', color='k')
+        # responsibilities = model.predict_proba(x[:, np.newaxis])
+        # pdf_individual = responsibilities * pdf[:, np.newaxis]
+        # ax.plot(x, pdf_individual, linestyle='--', color='k')
     elif col.endswith('t'):
         # fit single normal (gaussian) distribution (mixture)
         xlims = [12.5, 27.5]  # remove unwanted data in the fit
@@ -139,9 +139,9 @@ for col, ax in zip(rawDf.columns, axs.ravel()):
         # pdf = Probability Density Functions
         pdf = np.exp(logprob)
         ax.plot(x, pdf, linestyle='-', color='k')
-        responsibilities = model.predict_proba(x[:, np.newaxis])
-        pdf_individual = responsibilities * pdf[:, np.newaxis]
-        ax.plot(x, pdf_individual, linestyle='--', color='k')
+        # responsibilities = model.predict_proba(x[:, np.newaxis])
+        # pdf_individual = responsibilities * pdf[:, np.newaxis]
+        # ax.plot(x, pdf_individual, linestyle='--', color='k')
 
     print(f'\n{"-"*100}')
     print(f'{titles[col]} fit {n} population result:')
