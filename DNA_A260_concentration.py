@@ -30,6 +30,7 @@ for row in df.iterrows():
 
 writer = pd.ExcelWriter(file)
 df.to_excel(writer, sheet_name='Sheet1')
+# excel formatting
 for col in writer.sheets['Sheet1'].columns:
     head = col[0].value
     if head.startswith('molarC') or head.startswith('massC'):
@@ -43,4 +44,10 @@ for col in writer.sheets['Sheet1'].columns:
             alignment = copy(_cell.alignment)
             alignment.horizontal = 'left'
             _cell.alignment = alignment
+for row in writer.sheets['Sheet1'].rows:
+    for _cell in row:
+        alignment = copy(_cell.alignment)
+        alignment.horizontal = 'left'
+        _cell.alignment = alignment
+    break
 writer.save()
