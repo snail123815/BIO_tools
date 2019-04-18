@@ -10,7 +10,11 @@ file = '/Users/durand.dc/Library/Mobile Documents/com~apple~CloudDocs/Resources_
 
 df = pd.read_excel(file, index_col='id')
 
-for row in df.iterrows():
+molarCM = pd.Series(index=df.index, name='molarC(M)')
+massCgl = pd.Series(index=df.index, name='massC(g/L)')
+molarCuM = pd.Series(index=df.index, name='molarC(μM)')
+massCngul = pd.Series(index=df.index, name='massC(ng/μL)')
+for i, row in enumerate(df.iterrows()):
     name = row[0]
     seq, nType, a260 = (row[1]['seq'], row[1]['type'], row[1]['A260'])
     modifications = row[1]['modifications']
@@ -21,20 +25,30 @@ for row in df.iterrows():
     if pd.isnull(a260):
         continue
     print(f"\n\n{'*'*60}\n{name}")
+    # print(a260)
     molarC = molarConcentration(seq, a260, nType, modifications=modifications)
     massC = massConcentration(seq, a260, nType, modifications=modifications)
-    df.loc[name, 'molarC(M)'] = molarC
-    df.loc[name, 'massC(g/L)'] = massC
-    df.loc[name, 'molarC(μM)'] = molarC * 1000000
-    df.loc[name, 'massC(ng/μL)'] = massC * 1000
+    molarCM.iloc[i] = molarC
+    massCgl.iloc[i] = massC
+    molarCuM.iloc[i] = molarC * 1000000
+    massCngul.iloc[i] = massC * 1000
+
+resultCols = ['molarC(M)', 'massC(g/L)', 'molarC(μM)', 'massC(ng/μL)']
+oriDataCols = [col for col in df.columns if col not in resultCols]
+newDf = pd.concat((df.loc[:, oriDataCols],
+                   molarCM, massCgl, molarCuM, massCngul),
+                  axis=1)
+
 
 writer = pd.ExcelWriter(file)
-df.to_excel(writer, sheet_name='Sheet1')
+newDf.to_excel(writer, sheet_name='Sheet1')
 # excel formatting
 for col in writer.sheets['Sheet1'].columns:
     head = col[0].value
     if head.startswith('molarC') or head.startswith('massC'):
         for _cell in col[1:]:
+            if type(_cell.value) != float:
+                continue
             if _cell.value <= 0.05:
                 _cell.number_format = '0.00E+0'
             else:
