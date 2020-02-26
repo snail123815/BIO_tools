@@ -1,3 +1,9 @@
+###############################################
+# Scripted by Chao DU                         #
+# c.du@biology.leidenuniv.nl                  #
+# durand.dc@hotmail.com                       #
+###############################################
+
 import os
 import shutil
 from Bio import SeqIO

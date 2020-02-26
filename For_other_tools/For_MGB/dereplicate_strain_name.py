@@ -1,3 +1,10 @@
+###############################################
+# Scripted by Chao DU                         #
+# c.du@biology.leidenuniv.nl                  #
+# durand.dc@hotmail.com                       #
+###############################################
+
+
 # Open log file created when making multi gene blast MGB database,
 # count how many strains there are, and sort base on type -
 # WGS, plasmid, shotgun plasmid, chromosome, cds
