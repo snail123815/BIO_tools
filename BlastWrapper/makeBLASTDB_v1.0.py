@@ -11,6 +11,7 @@ $ python3 makeBLASTDB.py [sequence file(s)]/[Folder contains sequence]
 Sequence file(s) needs to be genbank or fasta format.
 '''
 
+from glob import glob
 from subprocess import run
 import os
 import sys
@@ -20,12 +21,15 @@ from Bio.SeqRecord import SeqRecord
 from Bio.Seq import Seq
 import tempfile
 from time import sleep
+import argparse
 
 
-def sterilizeName(name):
+def steriliseName(name):
     """Remove all un-supported characters for BLAST program
     Do not pass a name with extension here
     """
+    if name == None:
+        return ""
     for t in '\\/:*?"<>|().':
         text = name.replace(t, ' ')
     return "_".join(text.split())
@@ -80,10 +84,10 @@ def getProteins(seqFile, nameTags=['locus_tag', 'protein_id', 'label']):
                     print(product)
                     raise e
                 prots.append(prot)
-        return prots
+    return prots
 
 
-def makedbGenbank(seqFile, outputPath='Blast_wrapper/GenomeProteomeDatabase'):
+def makedbGenbank(seqFile, outputPath):
     """make both nucl and protein blast databases from input genbank file
     Generate both nucleotides and protein fasta file
     Result database will appear in the same folder as the input file
@@ -94,25 +98,24 @@ def makedbGenbank(seqFile, outputPath='Blast_wrapper/GenomeProteomeDatabase'):
                             beside the input file.
 
     Keyword Arguments:
-        outputPath {str} -- destination to store database (relative to the input)
-                               default: 'Blast_wrapper/GenomeProteomeDatabase' 
+        outputPath {str} -- destination to store database  
 
     Returns:
         outNuclDb, outProtDb -- full paths to database
     """
     # prepare file path and names
     seqPathName = os.path.splitext(seqFile)[0]
-    seqPath, seqName = os.path.split(seqPathName)
-    dbPath = os.path.join(seqPath, outputPath)
+    seqName = os.path.split(seqPathName)[1]
+    dbPath = outputPath
     if not os.path.isdir(dbPath):
         os.makedirs(dbPath)
         # makedirs support both simple folder and nested folder
         # mkdir only support simple folder
-    seqName = sterilizeName(seqName)
+    seqName = steriliseName(seqName)
     nuclFile = f'{seqName}_nucl.fasta'
     protFile = f'{seqName}_prot.fasta'
-    nuclPath = os.path.join(seqPath, nuclFile)
-    protPath = os.path.join(seqPath, protFile)
+    nuclPath = os.path.join(dbPath, nuclFile)
+    protPath = os.path.join(dbPath, protFile)
     outNuclDb = os.path.join(dbPath, os.path.splitext(nuclFile)[0])
     outProtDb = os.path.join(dbPath, os.path.splitext(protFile)[0])
 
@@ -136,9 +139,9 @@ def makedbGenbank(seqFile, outputPath='Blast_wrapper/GenomeProteomeDatabase'):
         print(f'{outNuclDb}')
     else:
         print('Make nucleotide database failed')
-        print('[stdout, stderr, seqPathName, seqPath, seqName, dbPath, outNuclDb]')
+        print('[stdout, stderr, seqPathName, seqName, dbPath, outNuclDb]')
         print('\n'.join([stdout, stderr, seqPathName,
-                         seqPath, seqName, dbPath, outNuclDb]))
+                         seqName, dbPath, outNuclDb]))
         raise Exception()
 
     # make protein database
@@ -182,7 +185,7 @@ def guessType(seqFile):
     return seqtype
 
 
-def makedbFasta(seqFile, outputPath='Blast_wrapper/GenomeProteomeDatabase'):
+def makedbFasta(seqFile, outputPath):
     """make both nucl and protein database for blast from input file
     Generate both nucleotide and protein fasta file
     Result database will appear in the same folder as the input file
@@ -196,13 +199,13 @@ def makedbFasta(seqFile, outputPath='Blast_wrapper/GenomeProteomeDatabase'):
     """
     # prepare path and file names
     seqPathName = os.path.splitext(seqFile)[0]
-    seqPath, seqName = os.path.split(seqPathName)
-    dbPath = os.path.join(seqPath, outputPath)
+    seqName = os.path.split(seqPathName)[1]
+    dbPath = outputPath
     if not os.path.isdir(dbPath):
         os.makedirs(dbPath)
         # makedirs support both simple folder and nested folder
         # mkdir only support simple folder
-    seqName = sterilizeName(seqName)
+    seqName = steriliseName(seqName)
     out = os.path.join(dbPath, os.path.splitext(seqName)[0])
     dbtype = guessType(seqFile)
     # make database
@@ -217,13 +220,13 @@ def makedbFasta(seqFile, outputPath='Blast_wrapper/GenomeProteomeDatabase'):
             f'\nSuccessfully made {dbtype} database\n{out}')
     else:
         print(f'Make {dbtype} database failed')
-        print('[stdout, stderr, seqPathName, seqPath, seqName, dbPath, out]')
+        print('[stdout, stderr, seqPathName, seqName, dbPath, out]')
         print('\n'.join([stdout, stderr, seqPathName,
-                         seqPath, seqName, dbPath, out]))
+                         seqName, dbPath, out]))
     return dbtype, out
 
 
-def dbMade(seqFile, outputPath='Blast_wrapper/GenomeProteomeDatabase'):
+def dbMade(seqFile, outputPath):
     """Check if a database from [seqFile] is made
 
     Arguments:
@@ -240,7 +243,7 @@ def dbMade(seqFile, outputPath='Blast_wrapper/GenomeProteomeDatabase'):
     seqPathName, ext = os.path.splitext(seqFile)
     seqPath, seqName = os.path.split(seqPathName)
     dbPath = os.path.join(seqPath, outputPath)
-    seqName = sterilizeName(seqName)
+    seqName = steriliseName(seqName)
     # store possible db files in list
     if ext in ['.fa', '.fasta', '.faa']:
         dbs = [os.path.join(dbPath, f) for f in [f'{seqName}.psq',
@@ -260,7 +263,7 @@ def dbMade(seqFile, outputPath='Blast_wrapper/GenomeProteomeDatabase'):
     return False
 
 
-def makedb(f, outputPath='Blast_wrapper/GenomeProteomeDatabase'):
+def makedb(f, outputPath):
     """Make blast database(s) for input file f
     Try to make both protein and nucleotide database for genbank file,
     determin database type automatically from fasta file.
@@ -275,18 +278,17 @@ def makedb(f, outputPath='Blast_wrapper/GenomeProteomeDatabase'):
     Returns:
         outNuclDb, outProtDb -- paths to the generated databases
     """
-    outputPath = os.path.join(os.path.split(f)[0], outputPath)
     ext = os.path.splitext(f)[1]
     if not os.path.isdir(outputPath):
         os.makedirs(outputPath)
     outNuclDb, outProtDb = ('', '')
-    if dbMade(f):
+    if dbMade(f,outputPath):
         pass
     else:
         if ext in ['.gb', '.genbank', '.gbk']:
-            outNuclDb, outProtDb = makedbGenbank(f)
+            outNuclDb, outProtDb = makedbGenbank(f, outputPath)
         elif ext in ['.fa', '.fasta', '.faa']:
-            dbtype, out = makedbFasta(f)
+            dbtype, out = makedbFasta(f, outputPath)
             if dbtype == 'nucl':
                 outNuclDb = out
             else:
@@ -329,34 +331,43 @@ def combinDbs(dbList, dbtype, dbName):
     print(f'\n{dbtype} db combined:\n{outputDb}')
 
 
-def main():
+def prepareArguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', help="path to sequence file or folder with sequence files", nargs='+', required=True)
+    parser.add_argument('-t', help='target path to store generated database')
+    parser.add_argument('-n', help='name of combined database, will be sterialized')
+    args = parser.parse_args()
+    ipaths = args.i
+    knownExts = ['fasta','fa','faa','gbk','gbff','gb']
+    filePaths = []
+    for p in ipaths:
+        if os.path.isdir(p):
+            for ext in knownExts:
+                filePaths += glob(os.path.join(p,f'*.{ext}'))
+        else:
+            if os.path.splitext(p)[1] not in knownExts:
+                sys.exit(f'Extension not known ({" ".join(knownExts)})')
+            filePaths.append(p)
+    if args.t == None:
+        dbpath = os.path.split((os.path.splitext(ipaths[0])[0]))[0] # path where dir or file located
+    else:
+        dbpath = args.t.strip()
+    dbpath = os.path.join(dbpath, 'blastdb')
+    if args.n != None:
+        if len(filePaths) == 1:
+            sys.exit('only one sequence, no need to combine database')
+        combinedDbname = steriliseName(args.n.strip())
+    else:
+        combinedDbname = os.path.split((os.path.splitext(ipaths[0])[0]))[1]
+    return filePaths, dbpath, combinedDbname
+
+def main(filePaths, dbpath, combinedDbname):
     # initialize lists for output databases
     nuclDbs = []
     protDbs = []
-
-    # check if the first argument is dir or not
-    # and prepare a name for combine database (not always useful)
-    arg1 = sys.argv[1]
-    if os.path.isdir(arg1):
-        fileList = os.listdir(arg1)
-        fileList = [os.path.join(arg1, f) for f in fileList]
-        combinDbName = os.path.split(arg1)[1]
-    elif os.path.isfile(arg1):
-        fileList = sys.argv[1:]
-        combinDbName = os.path.splitext(os.path.split(arg1)[1])[0]
-        if len(fileList) > 1:
-            for f in fileList[1:]:
-                if " " in f:
-                    combinDbName += f'_{f.split()[-1]}'
-                else:
-                    combinDbName += f'_{f.split("_")[-1]}'
-    else:
-        raise Exception('Path/File not found.')
-    combinDbName = sterilizeName(combinDbName)
-
     # make database
-    for f in fileList:
-        outNuclDb, outProtDb = makedb(f)
+    for f in filePaths:
+        outNuclDb, outProtDb = makedb(f, outputPath=dbpath)
         if outNuclDb != '':
             nuclDbs.append(outNuclDb)
         if outProtDb != '':
@@ -365,8 +376,10 @@ def main():
     for dbList, dbtype in zip([nuclDbs, protDbs], ['nucl', 'prot']):
         if len(dbList) <= 1:  # no need to combine
             continue
-        combinDbs(dbList, dbtype, combinDbName)
+        combinDbs(dbList, dbtype, combinedDbname)
 
 
 if __name__ == '__main__':
-    main()
+    filePaths, dbpath, combinedDbname = prepareArguments()
+    main(filePaths, dbpath, combinedDbname)
+
