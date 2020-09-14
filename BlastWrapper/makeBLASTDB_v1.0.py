@@ -7,7 +7,7 @@
 
 '''
 Usage:
-$ python3 makeBLASTDB.py [sequence file(s)]/[Folder contains sequence]
+$ python3 makeBLASTDB.py 
 Sequence file(s) needs to be genbank or fasta format.
 '''
 
@@ -282,7 +282,7 @@ def makedb(f, outputPath):
     if not os.path.isdir(outputPath):
         os.makedirs(outputPath)
     outNuclDb, outProtDb = ('', '')
-    if dbMade(f,outputPath):
+    if dbMade(f, outputPath):
         pass
     else:
         if ext in ['.gb', '.genbank', '.gbk']:
@@ -333,33 +333,40 @@ def combinDbs(dbList, dbtype, dbName):
 
 def prepareArguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', help="path to sequence file or folder with sequence files", nargs='+', required=True)
-    parser.add_argument('-t', help='target path to store generated database')
-    parser.add_argument('-n', help='name of combined database, will be sterialized')
+    parser.add_argument(
+        'input', help="path to sequence file or folder with sequence files", nargs='+')
+    parser.add_argument('-t', '--targetPath',
+                        help='target path to store generated database')
+    parser.add_argument('-n', '--databaseName', help='''
+    If multiple database was made, the program try to combine them, 
+    this parameter specifies the name of combined database, will be sterialized.
+    ''')
     args = parser.parse_args()
-    ipaths = args.i
-    knownExts = ['fasta','fa','faa','gbk','gbff','gb']
+    ipaths = args.input
+    knownExts = ['.fasta', '.fa', '.faa', '.gbk', '.gbff', '.gb']
     filePaths = []
     for p in ipaths:
         if os.path.isdir(p):
             for ext in knownExts:
-                filePaths += glob(os.path.join(p,f'*.{ext}'))
+                filePaths += glob(os.path.join(p, f'*{ext}'))
         else:
             if os.path.splitext(p)[1] not in knownExts:
                 sys.exit(f'Extension not known ({" ".join(knownExts)})')
             filePaths.append(p)
-    if args.t == None:
-        dbpath = os.path.split((os.path.splitext(ipaths[0])[0]))[0] # path where dir or file located
+    if args.targetPath == None:
+        dbpath = os.path.split((os.path.splitext(ipaths[0])[0]))[
+            0]  # path where dir or file located
     else:
         dbpath = args.t.strip()
     dbpath = os.path.join(dbpath, 'blastdb')
-    if args.n != None:
+    if args.databaseName != None:
         if len(filePaths) == 1:
             sys.exit('only one sequence, no need to combine database')
         combinedDbname = steriliseName(args.n.strip())
     else:
         combinedDbname = os.path.split((os.path.splitext(ipaths[0])[0]))[1]
     return filePaths, dbpath, combinedDbname
+
 
 def main(filePaths, dbpath, combinedDbname):
     # initialize lists for output databases
@@ -382,4 +389,3 @@ def main(filePaths, dbpath, combinedDbname):
 if __name__ == '__main__':
     filePaths, dbpath, combinedDbname = prepareArguments()
     main(filePaths, dbpath, combinedDbname)
-
