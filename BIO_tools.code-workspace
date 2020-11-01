@@ -1,0 +1,28 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"python.pythonPath": "/usr/local/bin/python3.8"
+	},
+	"launch": {
+		"configurations": [
+			{
+				"name": "compare_proteome.py",
+				"type": "python",
+				"request": "launch",
+				"program": "Genome_and_Proteome/compare_proteome.py",
+				"console": "integratedTerminal",
+				"args": [
+					"/Users/duc/NutstoreCloudBridge/Resources/Genomes_Info/Streptomyces_coelicolor/BlastM145/GenomeProteomeDatabase/M145_prot.pin",
+					"/Users/duc/NutstoreCloudBridge/Resources/Genomes_Info/QL37/QL37_NCBI_proteome.fa",
+					"-qname", "QL37",
+					"-tname", "M145",
+				]
+			}
+		],
+		"compounds": []
+	}
+}
