@@ -1,9 +1,9 @@
 # Define path
 import platform
 if platform.system() == 'Darwin':
-	fileReader = ['open', '-a', 'TextWrangler']
+	fileReader = ['open', '-a', 'TextEdit']
 elif platform.system() == 'Linux':
-	
+	fileReader = ['less']
 else: # 'Windows'
 	fileReader = ['notepad']
 
@@ -22,7 +22,7 @@ def write(string, file_path, end = None):
 def open_in_notepad(file_path):
 	import subprocess
 	try:
-		run_notepad = subprocess.run([*fileReader, file_path], shell = True)
+		run_notepad = subprocess.run([*fileReader, file_path])
 	except:
 		print(run_notepad)
 	

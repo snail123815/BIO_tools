@@ -21,6 +21,16 @@
 					"-qname", "QL37",
 					"-tname", "M145",
 				]
+			},
+			{
+				"name": "search_word_in_genbank.py",
+				"type": "python",
+				"request": "launch",
+				"program": "Genome_and_Proteome/search_word_in_genbank.py",
+				"console": "integratedTerminal",
+				"args": [
+					"/Users/duc/NutstoreCloudBridge/Resources/Genomes_Info/Streptomyces_coelicolor/M145PlusStredbNotes.gb"
+				]
 			}
 		],
 		"compounds": []
