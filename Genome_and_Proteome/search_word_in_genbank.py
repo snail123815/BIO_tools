@@ -1,7 +1,19 @@
+description = """
+Search a word or regular expression pattern in a genbank file,
+output a table of match features and a text file for detail of the matches.
+
+By DU Chao
+c.du@biology.leidenuniv.nl
+durand.dc@hotmail.com
+
+"""
+
+from argparse import ArgumentParser
 import re
 import sys
 import subprocess
 import platform
+import argparse
 from time import strftime, sleep
 from tempfile import NamedTemporaryFile
 
@@ -14,7 +26,14 @@ elif platform.system() == 'Linux':
 else: # 'Windows'
 	fileReader = ['notepad']
 
-genome = sys.argv[1]
+ArgParser = argparse.ArgumentParser(description=description, formatter_class=argparse.RawDescriptionHelpFormatter)
+ArgParser.add_argument('genome', type=str, help="genbank file to search")
+ArgParser.add_argument('-nameTag', type=str, help="Tag of feature name, default 'locus_tag'", default='locus_tag')
+args = ArgParser.parse_args()
+genome = args.genome.strip()
+nametag = args.nameTag.strip()
+
+# read genome
 my_seq = SeqIO.read(genome, 'genbank')
 
 while True:
@@ -46,7 +65,7 @@ while True:
 					if find.search(txt) != None:
 						output_str = f'{feat}\nMatch:\t{txt}\n{"-"*60}'
 						try:
-							featTag = feat.qualifiers['locus_tag'][0]
+							featTag = feat.qualifiers[nametag][0]
 						except KeyError as err:
 							print(err, feat.qualifiers[tag])
 							sys.exit()
