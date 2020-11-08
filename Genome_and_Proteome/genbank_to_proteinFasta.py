@@ -14,9 +14,12 @@ def getProteins(seq):
                 gene = gene[0].upper() + gene[1:]
             locusTag = feat.qualifiers['locus_tag'][0] if 'locus_tag' in feat.qualifiers else None
             proteinName = ', '.join(filter(None, (gene, locusTag))).replace(' ', '_')
-            prot = SeqRecord(Seq(feat.qualifiers['translation'][0]),
-                             id=locusTag, description=proteinName)
-            proteins.append(prot)
+            try:
+                prot = SeqRecord(Seq(feat.qualifiers['translation'][0]),
+                                 id=locusTag, description=proteinName)
+                proteins.append(prot)
+            except:
+                pass
     return proteins
 
 
