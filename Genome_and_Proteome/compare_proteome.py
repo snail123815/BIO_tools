@@ -35,6 +35,12 @@ tableOut = args.out.strip()
 eThresh = args.eThresh
 cThresh = args.cThresh
 
+for n in [dbFile, protsFasta, qname, tname, tableOut]:
+    fn = os.path.splitext(n)[0]
+    for s in ['.', ' ']:
+        assert s not in fn, f'"{s}" not allowed in the file names. Check: {n}.'
+
+
 if tableOut == "":
     tableOut = os.path.splitext(protsFasta)[0] + f"_{tname}"
 tableOut += "_corr"
@@ -43,7 +49,8 @@ tableOut += f"_e{eThresh}_cover{cThresh}.tsv"
 dbPath, dbName = os.path.split(dbFile)
 dbName = os.path.splitext(dbName)[0]
 
-os.chdir(dbPath)
+if dbPath != '': # current dir
+    os.chdir(dbPath)
 
 blastResTemp = NamedTemporaryFile()
 
@@ -54,6 +61,7 @@ print(blastpCmd)
 
 stdout, stderr = blastpCmd()
 
+print(f'Writing result in table {tableOut}')
 with open(tableOut, 'w') as outHandle:
     outHandle.write(f"{qname}\t{tname}\tCoverage\n")
     with open(blastResTemp.name, 'r') as resHandle:
