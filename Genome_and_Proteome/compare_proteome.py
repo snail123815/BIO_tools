@@ -17,32 +17,32 @@ from tempfile import NamedTemporaryFile
 
 
 Parser = argparse.ArgumentParser(description=about, formatter_class=argparse.RawDescriptionHelpFormatter)
-Parser.add_argument("db", type=str, help="Target BLAST protein database path")
-Parser.add_argument("q", type=str, help="Query protein file")
+Parser.add_argument("targetDatabase", type=str, help="Target protein BLAST database path")
+Parser.add_argument("queryProteinFasta", type=str, help="Query protein file in fasta format")
 Parser.add_argument("-qname", type=str, help="name of input proteome", default="query")
-Parser.add_argument("-tname", type=str, help="name of target proteome", default="target")
-Parser.add_argument('-out', type=str, help="tsv format output file", default="")
+Parser.add_argument("-tDbName", type=str, help="name of target proteome", default="name of target database")
+Parser.add_argument('-out', type=str, help="tsv format output file, default to [queryFile]_[tDbName]_corr_e[evalue]_cover[coverage].tsv", default="")
 Parser.add_argument("-eThresh", type=float, help="evalue threshold", default=0.001)
 Parser.add_argument("-cThresh", type=int, help="coverage cutoff", default=60)
 
 args = Parser.parse_args()
 
-dbFile = args.db.strip()
-protsFasta = args.q.strip()
+dbFile = args.targetDatabase.strip()
+protsFasta = args.queryProteinFasta.strip()
 qname = args.qname.strip()
-tname = args.tname.strip()
+tDbName = args.tDbName.strip()
 tableOut = args.out.strip()
 eThresh = args.eThresh
 cThresh = args.cThresh
 
-for n in [dbFile, protsFasta, qname, tname, tableOut]:
+for n in [dbFile, protsFasta, qname, tDbName, tableOut]:
     fn = os.path.splitext(n)[0]
     for s in ['.', ' ']:
         assert s not in fn, f'"{s}" not allowed in the file names. Check: {n}.'
 
 
 if tableOut == "":
-    tableOut = os.path.splitext(protsFasta)[0] + f"_{tname}"
+    tableOut = os.path.splitext(protsFasta)[0] + f"_{tDbName}"
 tableOut += "_corr"
 tableOut += f"_e{eThresh}_cover{cThresh}.tsv"
 
@@ -63,7 +63,7 @@ stdout, stderr = blastpCmd()
 
 print(f'Writing result in table {tableOut}')
 with open(tableOut, 'w') as outHandle:
-    outHandle.write(f"{qname}\t{tname}\tCoverage\n")
+    outHandle.write(f"{qname}\t{tDbName}\tCoverage\n")
     with open(blastResTemp.name, 'r') as resHandle:
         records = NCBIXML.parse(resHandle)
         for record in records:
