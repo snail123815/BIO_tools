@@ -8,15 +8,16 @@ def getProteins(seq):
     proteins = []
     for feat in seq.features:
         if feat.type == 'CDS':
-            gene = feat.qualifiers['gene'][0] if 'gene' in feat.qualifiers else None
+            gene = feat.qualifiers['gene'][0] if 'gene' in feat.qualifiers else '-'
             # make upper case for this is a protein
-            if gene != None:
-                gene = gene[0].upper() + gene[1:]
-            locusTag = feat.qualifiers['locus_tag'][0] if 'locus_tag' in feat.qualifiers else None
-            proteinName = ', '.join(filter(None, (gene, locusTag))).replace(' ', '_')
+            proteinName = gene[0].upper() + gene[1:] if len(gene) < 6 else '-'
+            locusTag = feat.qualifiers['locus_tag'][0] if 'locus_tag' in feat.qualifiers else '-'
+            pid = feat.qualifiers['protein_id'][0] if 'protein_id' in feat.qualifiers else locusTag
+            product = feat.qualifiers['product'][0] if 'product' in feat.qualifiers else '-'
+            proteinDesc = '|'.join([proteinName, product, ('-' if pid == locusTag else locusTag)]).replace(' ', '_')
             try:
                 prot = SeqRecord(Seq(feat.qualifiers['translation'][0]),
-                                 id=locusTag, description=proteinName)
+                                 id=pid, description=proteinDesc)
                 proteins.append(prot)
             except:
                 pass
