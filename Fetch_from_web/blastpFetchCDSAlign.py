@@ -2,7 +2,17 @@
 # By: Du, Chao
 # c.du@biology.leidenuniv.nl
 # MBT, IBL, Leiden Univ.
+# April 2021
 ##########################################
+
+blastpFetchCDSAlign_description='''
+    This script does following:
+    1. Do protein BLAST for input file on NCBI server
+    2. Find identical proteins for all results and Fetch coding sequence
+       Only get one identical protein from one organism.
+    3. Align these sequences use `clustalo`
+    '''
+blastpFetchCDSAlign_epilog='Prerequisites: blastp and clustalo.'
 
 import argparse
 import os
@@ -16,15 +26,8 @@ from Bio import Entrez
 
 
 def main():
-    parser = argparse.ArgumentParser(description='''
-    This script does following:
-    1. Do protein BLAST for input file on NCBI server
-    2. Find identical proteins for all results and Fetch coding sequence
-       Only get one identical protein from one organism.
-    3. Align these sequences use `clustalo`
-    ''',
-                                     epilog='Prerequisites: blastp and clustalo.'
-                                     )
+    parser = argparse.ArgumentParser(description=blastpFetchCDSAlign_description,
+                                     epilog=blastpFetchCDSAlign_epilog)
     parser.add_argument('email', help='Email address for Entrez database query')
     parser.add_argument('api_key', help="NCBI's API Key for Entrez database query, you can get it from 'Account settings' of your NCBI account")
     parser.add_argument('fasta', help='Protein fasta file')
